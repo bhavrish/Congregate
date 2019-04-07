@@ -21,15 +21,17 @@ class performerHomeViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @IBAction func onMoreInfo(_ sender: Any) {
+        UIApplication.shared.open(URL(string:"https://www.gcac.org/performers/performers/signup") as! URL, options: [:], completionHandler: nil)
     }
-    */
-
+    
+    @IBAction func onMoreInfo2(_ sender: Any) {
+        UIApplication.shared.open(URL(string:"http://www.austintexas.gov/news/city-austin-launches-busking-pilot-program") as! URL, options: [:], completionHandler: nil)
+    }
+    
+    @IBAction func onMoreInfo3(_ sender: Any) {
+        UIApplication.shared.open(URL(string:"http://theartscommission.org/forartists") as! URL, options: [:], completionHandler: nil)
+    }
+    
+    
 }

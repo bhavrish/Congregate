@@ -7,12 +7,40 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
-class signUpViewController: UIViewController {
+class signUpViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 
+    @IBOutlet weak var nameField: UITextField!
+    @IBOutlet weak var usernameField: UITextField!
+    @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var genderSegControl: UISegmentedControl!
+    @IBOutlet weak var myImageView: UIImageView!
+    
+    @IBAction func importImage(_ sender: Any) {
+        let image = UIImagePickerController()
+        image.delegate = self
+        image.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        image.allowsEditing = false
+        self.present(image, animated: false)
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
+            myImageView.image = image
+        }
+        else{
+        }
+        self.dismiss(animated: true, completion: nil)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        myImageView.layer.borderColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0).cgColor
+        myImageView.layer.cornerRadius = 5.0
+        myImageView.layer.borderWidth = 2
+        
         // Do any additional setup after loading the view.
     }
 
@@ -21,15 +49,21 @@ class signUpViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func onRegister(_ sender: Any) {
+        if let email = usernameField.text, let pass = passwordField.text {
+            Auth.auth().createUser(withEmail: email, password: pass, completion: { (user,error) in
+                
+                // Chat that user isn't nil
+                if let u = user {
+                    self.performSegue(withIdentifier: "performerHomeSegue2", sender: nil)
+                }
+                else {
+                    // return error message if doesnt work
+                }
+            })
+            
+        }
+        
     }
-    */
-
 }
