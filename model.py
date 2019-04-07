@@ -53,9 +53,11 @@ with tf.Session() as sess:
     tf.global_variables_initializer().run()
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord)
+    file = open("zip_data.txt", "w")
     while True:
         try:
             zip_code, test_data = sess.run([testzip, density])
-            print(zip_code, test_data)
+            file.write(zip_code, test_data)
         except tf.errors.OutOfRangeError:
             break
+    file.close()
