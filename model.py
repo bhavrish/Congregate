@@ -16,32 +16,38 @@ import tensorflow as tf
 import os
 import math
 
-def create_file_reader_ops(filename_queue):
-    reader = tf.TextLineReader(skip_header_lines=1)
-    _, csv_row = reader.read(filename_queue)
-    record_defaults = [[""], [""], [0], [0], [0], [0]]
-    zipCode, density, hour, month, day = tf.decode_csv(csv_row, record_defaults=record_defaults)
-    all_zips, weight_densities = process_file_statistics(zipCode, density, hour)
+tf.enable_eager_execution()
+
+def create_file_reader_ops(filename):
+    dataset = tf.data.experimental.CsvDataset(
+        filename,
+        [tf.string,  # Required field, use dtype or empty tensor
+        tf.float32,  # Optional field, default to 0.0
+        tf.int32,  # Required field, use dtype or empty tensor
+        ],
+        header=True,
+        select_cols=[0,1,2]  # Only parse first three columns
+    )
+    all_zips, weight_densities = process_file_statistics(dataset)
     return all_zips, weight_densities
 
-def process_file_statistics(zipCode, density, hour):
+def process_file_statistics(dataset):
     unique_zips = []
     pop_densities = []
     current_zip = 0
     agg_density = 0
-    for index in range(len(zipCode)):
-        if zipCode[index] not in unique_zips:
-            unique_zips.append(zipCode[index])
-            current_zip = zipCode[index]
+    for element in dataset:
+        if element[0] not in unique_zips:
+            unique_zips.append(element[0])
+            current_zip = element[0]
             pop_densities.append(agg_density)
             agg_density = 0
-        elif zipCode[index] == current_zip:
-            agg_density += density[index] * (math.sin(math.pi*hour/6.0 - 4.0) + 0.734)
+        elif element[0] == current_zip:
+            agg_density += element[1] * (math.sin(math.pi*element[2]/6.0 - 4.0) + 0.734)
     return unique_zips, pop_densities
 
-filenames = ["./fake-data.csv"]
-filename_queue = tf.train.string_input_producer(filenames, num_epochs=1, shuffle=False)
-testzip, density = create_file_reader_ops(filename_queue)
+filenames = ["fake-data.csv"]
+testzip, density = create_file_reader_ops(filenames)
 
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
